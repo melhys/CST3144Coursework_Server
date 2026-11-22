@@ -20,6 +20,31 @@ app.use(function(request, response, next){
 
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
+const uri = process.env.MONGODB_PREFIX +
+process.env.MONGODB_USERNAME + ":" +
+process.env.MONGODB_PASSWORD +
+process.env.MONGODB_URL;
+const client = new MongoClient(uri);
+const db = client.db('LessonData');
+
+// Test connection
+client.connect()
+    .then(() => console.log('Successfully connected to MongoDB Atlas'))
+    .catch(err => console.error('MongoDB connection error:', err));
+
+//get
+app.get('/lessons', async function(request, response){
+    try{
+        const collection = db.collection('lessons');
+        const results = await collection.find({}).toArray();
+        response.json(results);
+    }catch(error){
+        response.status(500).json({error: error.message});
+    }
+});
+
+//post
+
 app.listen(port, function() {
     console.log("app started on port " + port);
 });
