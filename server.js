@@ -1,9 +1,9 @@
-const express = require('express');
-const cors = require('cors');
-const cors = require('morgan');
-const path = require('path');
-require('dotenv').config({path: './config.env'});
-const {MongoClient} = require('mongodb');
+const express = require("express");
+const cors = require("cors");
+const cors = require("morgan");
+const path = require("path");
+require("dotenv").config({ path: "./config.env" });
+const { MongoClient } = require("mongodb");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -11,40 +11,67 @@ const API_URL = "https://m01038115-skillnest.onrender.com";
 
 app.use(cors());
 app.use(express.json());
-app.use(morgan('dev'));
+app.use(morgan("dev"));
 
-app.use(function(request, response, next){
-    console.log(`Incoming ${request.method} request to ${request.url}`);
-    next();
-})
+app.use(function (request, response, next) {
+  console.log(`Incoming ${request.method} request to ${request.url}`);
+  next();
+});
 
-app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use("/images", express.static(path.join(__dirname, "images")));
 
-const uri = process.env.MONGODB_PREFIX +
-process.env.MONGODB_USERNAME + ":" +
-process.env.MONGODB_PASSWORD +
-process.env.MONGODB_URL;
+const uri =
+  process.env.MONGODB_PREFIX +
+  process.env.MONGODB_USERNAME +
+  ":" +
+  process.env.MONGODB_PASSWORD +
+  process.env.MONGODB_URL;
 const client = new MongoClient(uri);
-const db = client.db('LessonData');
+const db = client.db("LessonData");
 
 // Test connection
-client.connect()
-    .then(() => console.log('Successfully connected to MongoDB Atlas'))
-    .catch(err => console.error('MongoDB connection error:', err));
+client
+  .connect()
+  .then(() => console.log("Successfully connected to MongoDB Atlas"))
+  .catch((err) => console.error("MongoDB connection error:", err));
 
 //get
-app.get('/lessons', async function(request, response){
-    try{
-        const collection = db.collection('lessons');
-        const results = await collection.find({}).toArray();
-        response.json(results);
-    }catch(error){
-        response.status(500).json({error: error.message});
-    }
+app.get("/lessons", async function (request, response) {
+  try {
+    const collection = db.collection("lessons");
+    const results = await collection.find({}).toArray();
+    response.json(results);
+  } catch (error) {
+    response.status(500).json({ error: error.message });
+  }
 });
 
 //post
+app.post("/orders", async function (request, response) {
+  try {
+    const orderData = request.body;
+    const collection = db.collection("orders");
+    const results = await collection.insertOne(orderData);
+    response.json(results);
+  } catch (error) {
+    response.status(500).json({ error: error.message });
+  }
+});
 
-app.listen(port, function() {
-    console.log("app started on port " + port);
+//put
+app.put('/lessons/:id', async function (request, response) {
+  try {
+    const collection = db.collection('lessons');
+
+    const query = { id: request.params.id };
+    const updates = { $set: request.body };
+    const result = await collection.updateOne(query, updates);
+    response.json(result);
+  } catch (error) {
+    response.status(500).json({ error: error.message });
+  }
+});
+
+app.listen(port, function () {
+  console.log("app started on port " + port);
 });
