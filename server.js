@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const cors = require("morgan");
+const morgan = require("morgan");
 const path = require("path");
 require("dotenv").config({ path: "./config.env" });
 const { MongoClient } = require("mongodb");
