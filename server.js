@@ -72,6 +72,17 @@ app.put('/lessons/:id', async function (request, response) {
   }
 });
 
+// 404 Handler
+app.use(function(request, response) {
+    response.status(404).json({ error: 'Route not found: ' + request.url });
+});
+
+// Global Error Handler 
+app.use(function(error, request, response, next) {
+    console.error(error.stack);
+    response.status(500).json({ error: 'Server error' });
+});
+
 app.listen(port, function () {
   console.log("app started on port " + port);
 });
