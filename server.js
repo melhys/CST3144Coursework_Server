@@ -3,7 +3,7 @@ const cors = require("cors");
 const morgan = require("morgan");
 const path = require("path");
 require("dotenv").config({ path: "./config.env" });
-import { MongoClient } from 'mongodb';
+const { MongoClient } = require('mongodb');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -76,6 +76,22 @@ app.get("/search/:term", async function (request, response) {
     response.status(500).json({ error: error.message });
   }
 });
+
+app.get("/erolment/:lessonid", async function (request, response) {
+  try{
+    const lessonId = request.params.lessonid;
+    const collection = db.collection("orders");
+
+    const orders = await collection.find({ lessonIds: lessonId }).toArray();
+    let count = 0;
+    orders.forEach(order => {
+      order.lessonIds.forEach(id => { if (id === lessonId) count++; });
+    });
+    response.json({ lessonId: lessonId, enrolled: count });
+  } catch (error) {
+    response.status(500).json({ error: error.message });
+  }
+})
 
 //post
 app.post("/orders", async function (request, response) {
