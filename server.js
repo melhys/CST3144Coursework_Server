@@ -76,7 +76,7 @@ app.get("/search/:term", async function (request, response) {
   }
 });
 
-app.get("/erolment/:lessonid", async function (request, response) {
+app.get("/enrolment/:lessonid", async function (request, response) {
   try{
     const lessonId = request.params.lessonid;
     const collection = db.collection("orders");
@@ -96,6 +96,7 @@ app.get("/erolment/:lessonid", async function (request, response) {
 app.post("/orders", async function (request, response) {
   try {
     const orderData = request.body;
+    console.log("New order received from:", orderData.name, "with", orderData.numberOfSpaces, "spaces");
     const collection = db.collection("orders");
     const results = await collection.insertOne(orderData);
     response.json(results);
@@ -104,23 +105,19 @@ app.post("/orders", async function (request, response) {
   }
 });
 
-console.log("New order received from:", orderData.name, "with", orderData.numberOfSpaces, "spaces");
-
 //put
 app.put('/lessons/:id', async function (request, response) {
   try {
     const collection = db.collection('lessons');
-
     const query = { id: request.params.id };
     const updates = { $set: request.body };
     const result = await collection.updateOne(query, updates);
+    console.log(`Updated lesson ${request.params.id} with`, request.body);
     response.json(result);
   } catch (error) {
     response.status(500).json({ error: error.message });
   }
 });
-
-console.log(`Updated lesson ${request.params.id} with`, request.body);
 
 // 404 Handler
 app.use(function(request, response) {
