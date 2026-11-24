@@ -7,7 +7,6 @@ const { MongoClient } = require('mongodb');
 
 const app = express();
 const port = process.env.PORT || 3000;
-const API_URL = "https://m01038115-skillnest.onrender.com";
 
 app.use(cors());
 app.use(express.json());
