@@ -104,6 +104,8 @@ app.post("/orders", async function (request, response) {
   }
 });
 
+console.log("New order received from:", orderData.name, "with", orderData.numberOfSpaces, "spaces");
+
 //put
 app.put('/lessons/:id', async function (request, response) {
   try {
@@ -117,6 +119,8 @@ app.put('/lessons/:id', async function (request, response) {
     response.status(500).json({ error: error.message });
   }
 });
+
+console.log(`Updated lesson ${request.params.id} with`, request.body);
 
 // 404 Handler
 app.use(function(request, response) {
